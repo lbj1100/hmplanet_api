@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PlanetUsersMapper">
+    
+    <resultMap type="PlanetUsers" id="PlanetUsersResult">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="email"    column="email"    />
+        <result property="password"    column="password"    />
+        <result property="avatarUrl"    column="avatar_url"    />
+        <result property="bio"    column="bio"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPlanetUsersVo">
+        select user_id, username, email, password, avatar_url, bio, phone_number, del_flag, create_by, create_time, update_by, update_time from planet_users
+    </sql>
+
+    <select id="selectPlanetUsersList" parameterType="PlanetUsers" resultMap="PlanetUsersResult">
+        <include refid="selectPlanetUsersVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="avatarUrl != null  and avatarUrl != ''"> and avatar_url = #{avatarUrl}</if>
+            <if test="bio != null  and bio != ''"> and bio = #{bio}</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+        </where>
+    </select>
+    
+    <select id="selectPlanetUsersByUserId" parameterType="Long" resultMap="PlanetUsersResult">
+        <include refid="selectPlanetUsersVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertPlanetUsers" parameterType="PlanetUsers" useGeneratedKeys="true" keyProperty="userId">
+        insert into planet_users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">username,</if>
+            <if test="email != null and email != ''">email,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="avatarUrl != null">avatar_url,</if>
+            <if test="bio != null">bio,</if>
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">#{username},</if>
+            <if test="email != null and email != ''">#{email},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="avatarUrl != null">#{avatarUrl},</if>
+            <if test="bio != null">#{bio},</if>
+            <if test="phoneNumber != null">#{phoneNumber},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePlanetUsers" parameterType="PlanetUsers">
+        update planet_users
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="bio != null">bio = #{bio},</if>
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deletePlanetUsersByUserId" parameterType="Long">
+        delete from planet_users where user_id = #{userId}
+    </delete>
+
+    <delete id="deletePlanetUsersByUserIds" parameterType="String">
+        delete from planet_users where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <select id="checkUserNameUnique" parameterType="String" resultMap="PlanetUsersResult">
+        select user_id, username from planet_users where del_flag = '0' and username = #{username} limit 1
+    </select>
+
+    <select id="checkPhoneUnique" parameterType="String" resultMap="PlanetUsersResult">
+        select user_id, phone_number from planet_users where phone_number = #{phonenumber} and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkEmailUnique" parameterType="String" resultMap="PlanetUsersResult">
+        select user_id, email from planet_users where del_flag = '0' and email = #{email} limit 1
+    </select>
+
+    <select id="selectUserByUserName" parameterType="String" resultMap="PlanetUsersResult">
+        <include refid="selectPlanetUsersVo"/>
+        where username = #{username} and del_flag = '0'
+    </select>
+</mapper>
