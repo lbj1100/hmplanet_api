@@ -52,7 +52,6 @@ public class DataSourceAspect
     {
         DataSource dataSource = getDataSource(point);
 
-        // TODO 获取参数名为url的参数
 //        Object[] args = point.getArgs();
 //        Object arg = args[args.length - 1];
         // 判断参数是否是String类型
