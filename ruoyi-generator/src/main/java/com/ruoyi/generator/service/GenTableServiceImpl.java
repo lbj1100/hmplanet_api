@@ -4,23 +4,39 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.ruoyi.common.annotation.DataSource;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.enums.DataSourceType;
+import com.ruoyi.framework.config.properties.DruidProperties;
+import com.ruoyi.framework.datasource.DataSourceMapManager;
+import com.ruoyi.framework.datasource.DynamicDataSource;
+import com.ruoyi.framework.datasource.DynamicDataSourceContextHolder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson2.JSON;
@@ -38,6 +54,10 @@ import com.ruoyi.generator.util.GenUtils;
 import com.ruoyi.generator.util.VelocityInitializer;
 import com.ruoyi.generator.util.VelocityUtils;
 
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+
+
 /**
  * 业务 服务层实现
  * 
@@ -53,6 +73,16 @@ public class GenTableServiceImpl implements IGenTableService
 
     @Autowired
     private GenTableColumnMapper genTableColumnMapper;
+
+
+    @Autowired
+    private DynamicDataSource dynamicDataSource;
+
+    @Autowired
+    DruidProperties druidProperties;
+
+    @Resource(name = "slaveDataSource")
+    DataSource switchDataSource;
 
     /**
      * 查询业务信息
@@ -100,7 +130,6 @@ public class GenTableServiceImpl implements IGenTableService
      * @return 数据库表集合
      */
 
-    @DataSource()
     @Override
     public List<GenTable> selectDbTableListLbj(GenTable genTable, String url)
     {
@@ -453,6 +482,65 @@ public class GenTableServiceImpl implements IGenTableService
                 }
             }
         }
+    }
+
+    /**
+     * 切换数据源
+     *
+     * @param url 连接地址
+     * @param username 用户名
+     * @param password 密码
+     */
+    @Override
+    public boolean switchDataSource(String url, String username, String password) {
+        try {
+            DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+            // 动态创建新的数据源
+            DruidDataSource newDataSource = createDataSource(url, username, password);
+
+            DruidDataSource druidDataSource = druidProperties.dataSource(newDataSource);
+//            // 添加到数据源集合中
+            DataSourceMapManager.addDataSource(
+                    DataSourceType.SWITCH.name(), druidDataSource);
+
+            // 刷新数据源
+            DynamicDataSource dynamicDataSource1 = new DynamicDataSource(DataSourceMapManager.getInstance());
+
+            beanFactory.registerSingleton("dataSource", dynamicDataSource1);
+
+            // 切换数据源
+            DynamicDataSourceContextHolder.setDataSourceType(DataSourceType.SWITCH.name());
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 动态创建数据源
+     */
+//    @Bean
+    private DruidDataSource createDataSource(String url, String username, String password) throws SQLException {
+
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+
+//        DruidDataSource dataSourceClone = ((DruidDataSource) switchDataSource).cloneDruidDataSource();
+//        dataSourceClone.setUrl(url);
+//        dataSourceClone.setUsername(username);
+//        dataSourceClone.setPassword(password);
+//
+//        DruidDataSource druidDataSource = dataSource.cloneDruidDataSource();
+//        druidDataSource.init();
+//        DruidDataSource druidDataSource = druidProperties.dataSource(dataSource);
+        dataSource.init();
+
+        return dataSource;
     }
 
     /**

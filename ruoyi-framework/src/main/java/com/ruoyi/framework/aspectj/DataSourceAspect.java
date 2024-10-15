@@ -53,24 +53,24 @@ public class DataSourceAspect
         DataSource dataSource = getDataSource(point);
 
         // TODO 获取参数名为url的参数
-        Object[] args = point.getArgs();
-        Object arg = args[args.length - 1];
+//        Object[] args = point.getArgs();
+//        Object arg = args[args.length - 1];
         // 判断参数是否是String类型
-        if (arg instanceof String)
-        {
-            String url = (String) arg;
-            // 判断url是否包含"jdbc:mysql://"
-            if (url.contains("jdbc:mysql://"))
-            {
-                // 判断url是否包含"serverTimezone"
-                if (!url.contains("serverTimezone"))
-                {
-                    // 如果不包含"serverTimezone"，则在url后面加上"serverTimezone=Asia/Shanghai"
-                    url += "?serverTimezone=Asia/Shanghai";
-                    args[args.length - 1] = url;
-                }
-            }
-        }
+//        if (arg instanceof String)
+//        {
+//            String url = (String) arg;
+//            // 判断url是否包含"jdbc:mysql://"
+//            if (url.contains("jdbc:mysql://"))
+//            {
+//                // 判断url是否包含"serverTimezone"
+//                if (!url.contains("serverTimezone"))
+//                {
+//                    // 如果不包含"serverTimezone"，则在url后面加上"serverTimezone=Asia/Shanghai"
+//                    url += "?serverTimezone=Asia/Shanghai";
+//                    args[args.length - 1] = url;
+//                }
+//            }
+//        }
 
 
         if (StringUtils.isNotNull(dataSource))
@@ -94,13 +94,16 @@ public class DataSourceAspect
      */
     public DataSource getDataSource(ProceedingJoinPoint point)
     {
+        //
         MethodSignature signature = (MethodSignature) point.getSignature();
         DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
+        // 如果方法上的注解为空，则获取类上的DataSource注解
         if (Objects.nonNull(dataSource))
         {
             return dataSource;
         }
 
+        // signature.getDeclaringType(): 获取声明方法的类
         return AnnotationUtils.findAnnotation(signature.getDeclaringType(), DataSource.class);
     }
 }

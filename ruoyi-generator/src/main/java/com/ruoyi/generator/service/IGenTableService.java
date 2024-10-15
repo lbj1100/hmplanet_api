@@ -2,6 +2,8 @@ package com.ruoyi.generator.service;
 
 import java.util.List;
 import java.util.Map;
+
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.generator.domain.GenTable;
 
 /**
@@ -135,4 +137,6 @@ public interface IGenTableService
      * @param genTable 业务信息
      */
     public void validateEdit(GenTable genTable);
+
+    public boolean switchDataSource(String url, String username, String password);
 }

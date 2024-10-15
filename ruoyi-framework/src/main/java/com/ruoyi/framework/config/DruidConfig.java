@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.sql.DataSource;
+
+import com.ruoyi.framework.datasource.DataSourceMapManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -41,10 +43,11 @@ public class DruidConfig
     @Bean
     @ConfigurationProperties("lbj.db1")
 //    @ConfigurationProperties("spring.datasource.druid.master")
-    public DataSource masterDataSource(DruidProperties druidProperties)
+    public DruidDataSource masterDataSource(DruidProperties druidProperties)
     {
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
-        return druidProperties.dataSource(dataSource);
+        DruidDataSource druidDataSource = druidProperties.dataSource(dataSource);
+        return druidDataSource;
     }
 
     @Bean
@@ -57,7 +60,6 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
-    // TODO 为什么不可以使用lbj.db3
     // 因为在application.properties中没有配置lbj.db3.enabled = true
     @Bean
     @ConfigurationProperties("lbj.db3")
@@ -68,15 +70,19 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
+
+
+    // @Bean注解把返回值注入到Spring容器中，
     @Bean(name = "dynamicDataSource")
     @Primary
-    public DynamicDataSource dataSource(DataSource masterDataSource)
+    // DataSource masterDataSource: 从容器中获取名为masterDataSource的Bean
+    public DynamicDataSource dataSource(DruidDataSource masterDataSource)
     {
-        Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);
-        setDataSource(targetDataSources, DataSourceType.SLAVE.name(), "slaveDataSource");
-        setDataSource(targetDataSources, DataSourceType.THIRD.name(), "thirdDataSource");
-        return new DynamicDataSource(masterDataSource, targetDataSources);
+//        Map<Object, Object> targetDataSources = new HashMap<>();
+        DataSourceMapManager.addDataSource(DataSourceType.MASTER.name(), masterDataSource);
+        setDataSource(DataSourceMapManager.getInstance(), DataSourceType.SLAVE.name(), "slaveDataSource");
+        setDataSource(DataSourceMapManager.getInstance(), DataSourceType.THIRD.name(), "thirdDataSource");
+        return new DynamicDataSource(masterDataSource, DataSourceMapManager.getInstance());
     }
     
     /**

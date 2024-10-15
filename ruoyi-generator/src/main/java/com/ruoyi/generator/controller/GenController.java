@@ -6,18 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.annotation.DataSource;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
@@ -92,16 +87,35 @@ public class GenController extends BaseController
         List<GenTable> list = genTableService.selectDbTableList(genTable);
         return getDataTable(list);
     }
+//    /**
+//     * lbj查询数据库列表
+//     */
+//    @PreAuthorize("@ss.hasPermi('tool:gen:list')")
+//    @GetMapping("/db/list/lbj")
+//    public TableDataInfo dataListLbj(GenTable genTable, String url)
+//    {
+//        startPage();
+//        List<GenTable> list = genTableService.selectDbTableListLbj(genTable, url);
+//        return getDataTable(list);
+//    }
+
     /**
-     * lbj查询数据库列表
+     * lbj 更改数据源
      */
-    @PreAuthorize("@ss.hasPermi('tool:gen:list')")
-    @GetMapping("/db/list/lbj")
-    public TableDataInfo dataListLbj(GenTable genTable, String url)
+//    @PreAuthorize("@ss.hasPermi('tool:gen:list')")
+    // TODO 接口能力：更改数据源
+    @PostMapping("/db/switch")
+    public AjaxResult switchDataSource(@RequestParam String url,
+                                       @RequestParam String username,
+                                       @RequestParam String password)
     {
-        startPage();
-        List<GenTable> list = genTableService.selectDbTableListLbj(genTable, url);
-        return getDataTable(list);
+        boolean success = genTableService.switchDataSource(url, username, password);
+        if (success)
+        {
+            return success();
+        } else {
+            return error();
+        }
     }
 
     /**

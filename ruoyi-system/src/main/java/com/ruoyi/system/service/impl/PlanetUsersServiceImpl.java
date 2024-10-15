@@ -18,6 +18,7 @@ import com.ruoyi.system.service.IPlanetUsersService;
  * @author ruoyi
  * @date 2024-10-10
  */
+// TODO: 测试数据源切换，这里更改为从从库读取数据，如果类和方法上都有注解，方法上的注解优先级更高！
 @DataSource(DataSourceType.SLAVE)
 @Service
 public class PlanetUsersServiceImpl implements IPlanetUsersService 
@@ -43,6 +44,8 @@ public class PlanetUsersServiceImpl implements IPlanetUsersService
      * @param planetUsers 星球用户信息
      * @return 星球用户信息
      */
+    // TODO: 高优先级，可判断是否成功切换数据源
+    @DataSource(DataSourceType.SWITCH)
     @Override
     public List<PlanetUsers> selectPlanetUsersList(PlanetUsers planetUsers)
     {

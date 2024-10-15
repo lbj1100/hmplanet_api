@@ -13,7 +13,15 @@ public class DynamicDataSource extends AbstractRoutingDataSource
 {
     public DynamicDataSource(DataSource defaultTargetDataSource, Map<Object, Object> targetDataSources)
     {
+        super.setLenientFallback(false);
         super.setDefaultTargetDataSource(defaultTargetDataSource);
+        super.setTargetDataSources(targetDataSources);
+        // super.afterPropertiesSet();是父类的方法，这里调用了父类的afterPropertiesSet()方法 用来初始化数据源
+        super.afterPropertiesSet();
+    }
+
+    public DynamicDataSource(Map<Object, Object> targetDataSources)
+    {
         super.setTargetDataSources(targetDataSources);
         super.afterPropertiesSet();
     }

@@ -68,7 +68,6 @@ public class FrontendUserDetailsService implements UserDetailsService
 
     public UserDetails createLoginUser(PlanetUsers user)
     {
-        // TODO 没有PlanetLoginUser类
         return new PlanetLoginUser(user);
     }
 }

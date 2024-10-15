@@ -20,5 +20,10 @@ public enum DataSourceType
     /**
      * 第三库
      */
-    THIRD
+    THIRD,
+
+    /**
+     * 切换库
+     */
+    SWITCH
 }
