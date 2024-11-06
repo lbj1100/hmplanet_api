@@ -25,8 +25,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="逻辑删除" prop="delFlag">
-        <el-select v-model="queryParams.delFlag" placeholder="请选择逻辑删除" clearable>
+      <el-form-item label="逻辑删除标记" prop="delFlag">
+        <el-select v-model="queryParams.delFlag" placeholder="请选择逻辑删除标记" clearable>
           <el-option
             v-for="dict in dict.type.common_del_flag"
             :key="dict.value"
@@ -34,44 +34,6 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建者" prop="createBy">
-        <el-input
-          v-model="queryParams.createBy"
-          placeholder="请输入创建者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="daterangeCreateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新者" prop="updateBy">
-        <el-input
-          v-model="queryParams.updateBy"
-          placeholder="请输入更新者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="更新时间">
-        <el-date-picker
-          v-model="daterangeUpdateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -130,15 +92,9 @@
       <el-table-column label="用户唯一ID" align="center" prop="userId" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="用户邮箱" align="center" prop="email" />
-      <el-table-column label="用户密码" align="center" prop="password" />
       <el-table-column label="用户头像" align="center" prop="avatarUrl" />
       <el-table-column label="用户个人简介" align="center" prop="bio" />
       <el-table-column label="用户手机号" align="center" prop="phoneNumber" />
-      <el-table-column label="逻辑删除" align="center" prop="delFlag">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.common_del_flag" :value="scope.row.delFlag"/>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -188,6 +144,16 @@
         <el-form-item label="用户手机号" prop="phoneNumber">
           <el-input v-model="form.phoneNumber" placeholder="请输入用户手机号" />
         </el-form-item>
+        <el-form-item label="逻辑删除标记" prop="delFlag">
+          <el-select v-model="form.delFlag" placeholder="请选择逻辑删除标记">
+            <el-option
+              v-for="dict in dict.type.common_del_flag"
+              :key="dict.value"
+              :label="dict.label"
+              :value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -223,23 +189,14 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 用户手机号时间范围
-      daterangeCreateTime: [],
-      // 用户手机号时间范围
-      daterangeUpdateTime: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
         username: null,
         email: null,
-        bio: null,
         phoneNumber: null,
         delFlag: null,
-        createBy: null,
-        createTime: null,
-        updateBy: null,
-        updateTime: null
       },
       // 表单参数
       form: {},
@@ -264,15 +221,6 @@ export default {
     /** 查询用户信息列表 */
     getList() {
       this.loading = true;
-      this.queryParams.params = {};
-      if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
-        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
-      }
-      if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
-        this.queryParams.params["beginUpdateTime"] = this.daterangeUpdateTime[0];
-        this.queryParams.params["endUpdateTime"] = this.daterangeUpdateTime[1];
-      }
       listUsers(this.queryParams).then(response => {
         this.usersList = response.rows;
         this.total = response.total;
@@ -309,8 +257,6 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeCreateTime = [];
-      this.daterangeUpdateTime = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },

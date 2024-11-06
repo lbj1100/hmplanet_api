@@ -1,7 +1,7 @@
-# create database if not exists hm_planet default charset utf8mb4 collate utf8mb4_general_ci;
-# use hm_planet;
-create database if not exists hm_planet_db default charset utf8mb4 collate utf8mb4_general_ci;
-use hm_planet_db;
+create database if not exists hm_planet default charset utf8mb4 collate utf8mb4_general_ci;
+use hm_planet;
+# create database if not exists hm_planet_db default charset utf8mb4 collate utf8mb4_general_ci;
+# use hm_planet_db;
 
 -- ----------------------------
 -- 1、用户表

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.PlanetUsersMapper">
-
+    
     <resultMap type="PlanetUsers" id="PlanetUsersResult">
         <result property="userId"    column="user_id"    />
         <result property="username"    column="username"    />
@@ -25,14 +25,16 @@
 
     <select id="selectPlanetUsersList" parameterType="PlanetUsers" resultMap="PlanetUsersResult">
         <include refid="selectPlanetUsersVo"/>
-        <where>
+        <where>  
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
             <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="avatarUrl != null  and avatarUrl != ''"> and avatar_url = #{avatarUrl}</if>
+            <if test="bio != null  and bio != ''"> and bio = #{bio}</if>
             <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
-            <if test="delFlag != null "> and del_flag = #{delFlag}</if>
         </where>
     </select>
-
+    
     <select id="selectPlanetUsersByUserId" parameterType="Long" resultMap="PlanetUsersResult">
         <include refid="selectPlanetUsersVo"/>
         where user_id = #{userId}
@@ -52,7 +54,7 @@
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-        </trim>
+         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null and username != ''">#{username},</if>
             <if test="email != null and email != ''">#{email},</if>
@@ -65,7 +67,7 @@
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-        </trim>
+         </trim>
     </insert>
 
     <update id="updatePlanetUsers" parameterType="PlanetUsers">
@@ -91,7 +93,7 @@
     </delete>
 
     <delete id="deletePlanetUsersByUserIds" parameterType="String">
-        delete from planet_users where user_id in
+        delete from planet_users where user_id in 
         <foreach item="userId" collection="array" open="(" separator="," close=")">
             #{userId}
         </foreach>

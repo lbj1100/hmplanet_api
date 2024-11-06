@@ -10,6 +10,10 @@ import com.ruoyi.framework.web.service.PlanetLoginService;
 import com.ruoyi.system.service.IPlanetUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 用户信息Controller
@@ -46,7 +50,7 @@ public class PlanetLoginController extends BaseController
      *
      * @return 用户信息
      */
-    @GetMapping("getInfo")
+    @GetMapping("/getInfo")
     public PlanetAjaxResult getInfo()
     {
         PlanetUsers user = SecurityUtils.getPlanetLoginUser().getUser();
@@ -60,4 +64,25 @@ public class PlanetLoginController extends BaseController
 //        ajax.put("permissions", permissions);
         return ajax;
     }
+
+    @PostMapping("/saveImage")
+    public AjaxResult saveImage(@RequestBody MultipartFile file) {
+        System.out.println("file: " + file);
+        if (file.isEmpty()) {
+            return AjaxResult.error("No file uploaded");
+        }
+        try {
+            // 保存文件到服务器目录
+            String fileName = file.getOriginalFilename();
+            String filePath = "D:/planet/images/" + fileName;
+            File dest = new File(filePath);
+            file.transferTo(dest); // 将文件写入目标位置
+
+            return AjaxResult.success("File uploaded successfully", fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return AjaxResult.error("File upload failed");
+        }
+    }
+
 }

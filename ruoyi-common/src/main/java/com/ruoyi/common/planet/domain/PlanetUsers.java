@@ -2,6 +2,8 @@ package com.ruoyi.common.planet.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -11,6 +13,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author ruoyi
  * @date 2024-10-10
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class PlanetUsers extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -44,79 +48,6 @@ public class PlanetUsers extends BaseEntity
 
     /** 逻辑删除标记（0: 未删除, 1: 已删除） */
     private Integer delFlag;
-
-    public void setUserId(Long userId) 
-    {
-        this.userId = userId;
-    }
-
-    public Long getUserId() 
-    {
-        return userId;
-    }
-    public void setUsername(String username) 
-    {
-        this.username = username;
-    }
-
-    public String getUsername() 
-    {
-        return username;
-    }
-    public void setEmail(String email) 
-    {
-        this.email = email;
-    }
-
-    public String getEmail() 
-    {
-        return email;
-    }
-    public void setPassword(String password) 
-    {
-        this.password = password;
-    }
-
-    public String getPassword() 
-    {
-        return password;
-    }
-    public void setAvatarUrl(String avatarUrl) 
-    {
-        this.avatarUrl = avatarUrl;
-    }
-
-    public String getAvatarUrl() 
-    {
-        return avatarUrl;
-    }
-    public void setBio(String bio) 
-    {
-        this.bio = bio;
-    }
-
-    public String getBio() 
-    {
-        return bio;
-    }
-    public void setPhoneNumber(String phoneNumber) 
-    {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPhoneNumber() 
-    {
-        return phoneNumber;
-    }
-    public void setDelFlag(Integer delFlag) 
-    {
-        this.delFlag = delFlag;
-    }
-
-    public Integer getDelFlag() 
-    {
-        return delFlag;
-    }
 
     @Override
     public String toString() {
